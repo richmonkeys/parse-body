@@ -1,5 +1,5 @@
 {
-  "name": "parse-body",
+  "name": "@richmonkeys/parse-body",
   "version": "1.0.0",
   "description": "Parse multipart request body using busboy",
   "main": "index.js",
