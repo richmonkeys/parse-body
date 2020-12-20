@@ -1,0 +1,44 @@
+{
+  "name": "parse-body",
+  "version": "1.0.0",
+  "description": "Parse multipart request body using busboy",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "clean": "tsc --build --clean",
+    "prepublish": "npm run clean && npm run build",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/richmonkeys/parse-body.git"
+  },
+  "keywords": [
+    "nodejs",
+    "multipart",
+    "busboy",
+    "parse"
+  ],
+  "author": "richmonkeys",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/richmonkeys/parse-body/issues"
+  },
+  "homepage": "https://github.com/richmonkeys/parse-body#readme",
+  "dependencies": {
+    "busboy": "^0.3.1",
+    "lodash": "^4.17.20"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
+    "@babel/preset-typescript": "^7.12.7",
+    "@types/busboy": "^0.2.3",
+    "@types/jest": "^26.0.19",
+    "@types/lodash": "^4.14.165",
+    "@types/node": "^14.14.14",
+    "jest": "^26.6.3",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.1.3"
+  }
+}
