@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "clean": "tsc --build --clean",
-    "prepublish": "npm run clean && npm run build",
+    "prepare": "npm run clean && npm run build",
     "test": "jest --passWithNoTests"
   },
   "repository": {
