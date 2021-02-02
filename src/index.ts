@@ -24,57 +24,59 @@ export class BusboyFile {
   }
 }
 
-const parseBody = (req: IncomingMessage) => new Promise(resolve => {
-  const body = {}
+function parseBody<T = {}>(req: IncomingMessage): Promise<T | undefined> {
+  return new Promise(resolve => {
+    const body = {}
 
-  if (!req.headers['content-type']) {
-    return resolve(undefined)
-  }
-
-  const busboy = new Busboy({
-    headers: req.headers,
-  })
-
-  const setBody = (key: string, value: any) => {
-    if (key?.includes('__proto__')) { return }
-
-    const currentValue = get(body, key)
-
-    if (currentValue === undefined) {
-      set(body, key, value)
-    } else if (Array.isArray(currentValue)) {
-      set(body, key, currentValue.concat(value))
-    } else {
-      set(body, key, [currentValue, value])
+    if (!req.headers['content-type']) {
+      return resolve(undefined)
     }
-  }
 
-  busboy.on('file', (fieldname: string, file: NodeJS.ReadableStream, filename: string, encoding: string, mimetype: string) => {
-    if (fieldname?.includes('__proto__')) { return }
-    const chunks: Buffer[] = []
-    let size = 0
-    file.on('data', data => {
-      chunks.push(data)
-      size += data.length
+    const busboy = new Busboy({
+      headers: req.headers,
     })
-    file.on('end', () => {
-      const value = new BusboyFile(filename, Buffer.concat(chunks), size, mimetype, encoding)
+
+    const setBody = (key: string, value: any) => {
+      if (key?.includes('__proto__')) { return }
+
+      const currentValue = get(body, key)
+
+      if (currentValue === undefined) {
+        set(body, key, value)
+      } else if (Array.isArray(currentValue)) {
+        set(body, key, currentValue.concat(value))
+      } else {
+        set(body, key, [currentValue, value])
+      }
+    }
+
+    busboy.on('file', (fieldname: string, file: NodeJS.ReadableStream, filename: string, encoding: string, mimetype: string) => {
+      if (fieldname?.includes('__proto__')) { return }
+      const chunks: Buffer[] = []
+      let size = 0
+      file.on('data', data => {
+        chunks.push(data)
+        size += data.length
+      })
+      file.on('end', () => {
+        const value = new BusboyFile(filename, Buffer.concat(chunks), size, mimetype, encoding)
+        setBody(fieldname, value)
+      })
+    })
+
+    busboy.on('field', (fieldname: string, value: any, fieldnameTruncated: boolean, valTruncated: boolean, encoding: string, mimetype: string) => {
+      try {
+        value = JSON.parse(value)
+      } catch (e) { }
       setBody(fieldname, value)
     })
-  })
 
-  busboy.on('field', (fieldname: string, value: any, fieldnameTruncated: boolean, valTruncated: boolean, encoding: string, mimetype: string) => {
-    try {
-      value = JSON.parse(value)
-    } catch (e) { }
-    setBody(fieldname, value)
-  })
+    busboy.on('finish', () => {
+      resolve(body as T)
+    })
 
-  busboy.on('finish', () => {
-    resolve(body)
+    req.pipe(busboy)
   })
-
-  req.pipe(busboy)
-})
+}
 
 export default parseBody
