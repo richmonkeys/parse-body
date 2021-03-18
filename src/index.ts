@@ -18,6 +18,7 @@ export class BusboyFile {
   constructor(filename?: string, data?: Buffer, size?: number, mimetype?: string, encoding?: string) {
     this.filename = filename
     this.data = data
+    this.buffer = data
     this.size = size
     this.mimetype = mimetype
     this.encoding = encoding
